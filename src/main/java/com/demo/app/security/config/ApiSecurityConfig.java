@@ -24,10 +24,6 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(
-	    securedEnabled = true,
-	    jsr250Enabled = true,
-	    prePostEnabled = true)
 @Order(1)
 public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
 	
@@ -56,10 +52,10 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
 	            .authenticationEntryPoint(failureEntryPoint)
 	            .and();
 		
-		http.httpBasic().authenticationEntryPoint(failureEntryPoint);
-		
 		http.authorizeRequests()
-				.antMatchers("/v2/api-docs", "/api-docs", "/swagger-ui/**", "/configuration/ui", "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**").permitAll()
+				.antMatchers("/v2/api-docs", "/api-docs",
+						 "/configuration/ui", "/configuration/security",
+						 "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**").permitAll()
 				.antMatchers(HttpMethod.POST, "/rest/api/v1/login").permitAll()
 				.antMatchers(HttpMethod.POST, "/rest/api/v1/user").permitAll()
 				.anyRequest().authenticated()
@@ -74,19 +70,6 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
 		authenticationProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
 		authenticationProvider.setUserDetailsService(authenticationUserDetailsService);
 		auth.authenticationProvider(authenticationProvider);
-	}
-
-	@Bean
-	public CorsFilter corsFilter() {
-
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowCredentials(true);
-		config.addAllowedOrigin("*");
-		config.addAllowedHeader("*");
-		config.addAllowedMethod("*");
-		source.registerCorsConfiguration("/**", config);
-		return new CorsFilter(source);
 	}
 
 	@Bean
